@@ -1,182 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
+import Navbar from '@/components/Navbar';
+import HeroSection from '@/components/HeroSection';
 
 export default function Home() {
-  const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
     document.documentElement.style.scrollBehavior = 'smooth';
-    window.addEventListener('scroll', handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       document.documentElement.style.scrollBehavior = 'auto';
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e8f4fc] via-[#f0f7fc] to-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#e8f4fc] via-[#f0f7fc] to-white dark:from-[#0a0f1e] dark:via-[#101830] dark:to-[#0a0f1e] relative overflow-hidden transition-colors duration-500">
       {/* Background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(30,64,175,0.08),transparent_50%)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(30,64,175,0.08),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_50%)] pointer-events-none"></div>
       
       {/* Navbar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled 
-          ? 'bg-white/90 backdrop-blur-xl shadow-lg border-b border-[#1e40af]/10' 
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
-          {/* Logo */}
-          <a href="#" className="font-medium text-[#0e0e0e] text-2xl md:text-3xl hover:opacity-80 transition-opacity">
-            {'<bbuilds/>'}
-          </a>
-
-          {/* Nav Links */}
-          <div className="hidden md:flex gap-12 text-[#1e40af] text-lg font-medium">
-            <a href="#services" className="hover:text-[#152d7c] transition-colors">Services</a>
-            <a href="#about" className="hover:text-[#152d7c] transition-colors">About</a>
-            <a href="#case-studies" className="hover:text-[#152d7c] transition-colors">Portfolio</a>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex items-center gap-4">
-            <a
-              href="#case-studies"
-              className="hidden sm:flex items-center justify-center px-6 py-3 bg-[#f5f5f6] border border-[#10225d] rounded-full text-sm md:text-base font-medium transition-all duration-300 hover:shadow-lg"
-              style={{
-                background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 32%, #0d1b49 53%, #152d7c 81%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              View Casestudies
-            </a>
-            <a
-              href="https://cal.com/bbuilds/discovery-call"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center px-6 py-3 bg-[#c5defc] border-2 border-[#1e40af] rounded-full text-sm md:text-base font-medium shadow-[0px_8px_24px_0px_rgba(30,64,175,0.4)] transition-all duration-300 hover:shadow-[0px_12px_32px_0px_rgba(30,64,175,0.5)] hover:scale-105"
-              style={{
-                background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 32%, #0d1b49 53%, #152d7c 81%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Book an appointment
-            </a>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-24 pb-16 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center w-full">
-          {/* Left Content */}
-          <div className="space-y-8">
-            {/* Main Heading */}
-            <div className="space-y-2">
-              <h1 
-                className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
-                style={{
-                  background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 50%, #0d1b49 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                From idea to impact
-              </h1>
-              <h1 
-                className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
-                style={{
-                  background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 50%, #0d1b49 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                We build what matters.
-              </h1>
-            </div>
-
-            {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-[#0e0e0e] font-medium leading-relaxed max-w-2xl">
-              <span className="text-[#1e40af] font-semibold">{'<bbuilds/>'}</span> is a product-focused technology studio building SaaS, automation, and internal systems for teams that care about execution.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-6 pt-4">
-              <a
-                href="https://cal.com/bbuilds/discovery-call"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center px-10 py-5 bg-[#c5defc] border-2 border-[#1e40af] rounded-full text-xl font-medium shadow-[0px_8px_24px_0px_rgba(30,64,175,0.4)] transition-all duration-300 hover:shadow-[0px_12px_32px_0px_rgba(30,64,175,0.5)] hover:scale-105"
-                style={{
-                  background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 32%, #0d1b49 53%, #152d7c 81%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                Schedule a Call
-              </a>
-              <a
-                href="#case-studies"
-                className="flex items-center justify-center px-10 py-5 bg-[#f5f5f6] border border-[#10225d] rounded-full text-xl font-medium transition-all duration-300 hover:shadow-lg"
-                style={{
-                  background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 32%, #0d1b49 53%, #152d7c 81%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                View Casestudies
-              </a>
-            </div>
-          </div>
-
-          {/* Right Content - Geosphere Illustration */}
-          <div className="relative flex items-center justify-center">
-            <div className="relative w-full max-w-lg aspect-square">
-              {/* Outer circle */}
-              <div className="absolute inset-0 rounded-full border-2 border-[#1e40af]/20 animate-pulse"></div>
-              {/* Inner decorative circles */}
-              <div className="absolute inset-8 rounded-full border border-[#1e40af]/30"></div>
-              <div className="absolute inset-16 rounded-full border border-[#1e40af]/40"></div>
-              {/* Center content */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <Image
-                    src="/logo-bgless.png"
-                    alt="bbuilds logo"
-                    width={120}
-                    height={120}
-                    className="mx-auto mb-4"
-                  />
-                </div>
-              </div>
-              {/* Floating dots */}
-              <div className="absolute top-1/4 right-0 w-3 h-3 rounded-full bg-[#1e40af]"></div>
-              <div className="absolute bottom-1/4 left-0 w-2 h-2 rounded-full bg-[#152d7c]"></div>
-              <div className="absolute top-0 left-1/3 w-2 h-2 rounded-full bg-[#1e40af]/60"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* About bbuilds Section */}
-      <section id="about" className="py-20 px-6 md:px-12 bg-gradient-to-b from-white to-[#f0f7fc]">
+      <section id="about" className="py-20 px-6 md:px-12 bg-gradient-to-b from-white to-[#f0f7fc] dark:from-[#0a0f1e] dark:to-[#101830] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
           {/* Philosophy Statement */}
           <div className="text-center mb-16">
-            <p className="text-2xl md:text-3xl text-[#0e0e0e] max-w-4xl mx-auto leading-relaxed">
+            <p className="text-2xl md:text-3xl text-[#0e0e0e] dark:text-white/90 max-w-4xl mx-auto leading-relaxed">
               We don&apos;t believe in overpromising or building for vanity. Our work is grounded in real-world constraints
             </p>
           </div>
@@ -188,11 +41,11 @@ export default function Home() {
                 key={item} 
                 className={`p-8 rounded-2xl text-center ${
                   index < 2 
-                    ? 'bg-white border border-[#1e40af]/20 shadow-lg' 
+                    ? 'bg-white dark:bg-[#10225d]/50 border border-[#1e40af]/20 dark:border-white/10 shadow-lg dark:shadow-none' 
                     : 'bg-transparent'
                 }`}
               >
-                <span className="text-xl md:text-2xl font-medium text-[#0e0e0e]">{item}</span>
+                <span className="text-xl md:text-2xl font-medium text-[#0e0e0e] dark:text-white">{item}</span>
               </div>
             ))}
           </div>
@@ -203,24 +56,24 @@ export default function Home() {
             <div className="relative flex items-center justify-center">
               <div className="relative w-80 h-80 md:w-96 md:h-96">
                 {/* Three overlapping circles */}
-                <div className="absolute top-0 left-1/4 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 bg-[#1e40af]/5"></div>
-                <div className="absolute top-0 right-1/4 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 bg-[#1e40af]/5"></div>
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 bg-[#1e40af]/5"></div>
+                <div className="absolute top-0 left-1/4 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 dark:border-white/20 bg-[#1e40af]/5 dark:bg-white/5"></div>
+                <div className="absolute top-0 right-1/4 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 dark:border-white/20 bg-[#1e40af]/5 dark:bg-white/5"></div>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 dark:border-white/20 bg-[#1e40af]/5 dark:bg-white/5"></div>
                 {/* Center */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#1e40af] font-medium text-lg">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#1e40af] dark:text-white font-medium text-lg">
                   {'<bbuilds/>'}
                 </div>
                 {/* Labels */}
-                <span className="absolute top-4 left-0 text-sm font-medium text-[#0e0e0e]">Product Thinking</span>
-                <span className="absolute top-4 right-0 text-sm font-medium text-[#0e0e0e]">Engineering</span>
-                <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-medium text-[#0e0e0e]">Execution</span>
+                <span className="absolute top-4 left-0 text-sm font-medium text-[#0e0e0e] dark:text-white/90">Product Thinking</span>
+                <span className="absolute top-4 right-0 text-sm font-medium text-[#0e0e0e] dark:text-white/90">Engineering</span>
+                <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-medium text-[#0e0e0e] dark:text-white/90">Execution</span>
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-6">
-              <p className="text-xl md:text-2xl text-[#0e0e0e] leading-relaxed">
-                From SaaS platforms and automation systems to internal tools and open-source initiatives, <span className="text-[#1e40af] font-semibold">{'<bbuilds/>'}</span> exists to build things that actually ship and continue to work in the real world
+              <p className="text-xl md:text-2xl text-[#0e0e0e] dark:text-white/90 leading-relaxed">
+                From SaaS platforms and automation systems to internal tools and open-source initiatives, <span className="text-[#1e40af] dark:text-[#ededed] font-semibold">{'<bbuilds/>'}</span> exists to build things that actually ship and continue to work in the real world
               </p>
             </div>
           </div>
@@ -228,15 +81,15 @@ export default function Home() {
       </section>
 
       {/* Meet the Founder Section */}
-      <section className="py-20 px-6 md:px-12 bg-[#f0f7fc]">
+      <section className="py-20 px-6 md:px-12 bg-[#f0f7fc] dark:bg-[#101830] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] mb-16">Meet the Founder</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] dark:text-white mb-16">Meet the Founder</h2>
           
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Founder Image */}
             <div className="relative">
-              <div className="w-full max-w-md aspect-square rounded-3xl bg-gradient-to-br from-[#c5defc] to-[#e8f4fc] border border-[#1e40af]/20 flex items-center justify-center">
-                <div className="w-[95%] h-[95%] rounded-2xl bg-white/50 flex items-center justify-center">
+              <div className="w-full max-w-md aspect-square rounded-3xl bg-gradient-to-br from-[#c5defc] to-[#e8f4fc] dark:from-[#10225d] dark:to-[#152d7c] border border-[#1e40af]/20 dark:border-white/10 flex items-center justify-center">
+                <div className="w-[95%] h-[95%] rounded-2xl bg-white/50 dark:bg-black/20 flex items-center justify-center">
                   <span className="text-8xl">👨‍💻</span>
                 </div>
               </div>
@@ -244,14 +97,14 @@ export default function Home() {
 
             {/* Founder Info */}
             <div className="space-y-6">
-              <h3 className="text-3xl md:text-4xl font-bold text-[#0e0e0e]">VVS Basanth Pedapati</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-[#0e0e0e] dark:text-white">VVS Basanth Pedapati</h3>
               
-              <p className="text-lg text-[#0e0e0e] leading-relaxed">
-                With a strong background in product development and engineering, Basanth started <span className="text-[#1e40af] font-semibold">{'<bbuilds/>'}</span> to solve a recurring problem he saw across startups and businesses: great ideas failing due to poor execution, unclear ownership, or fragile systems.
+              <p className="text-lg text-[#0e0e0e] dark:text-white/80 leading-relaxed">
+                With a strong background in product development and engineering, Basanth started <span className="text-[#1e40af] dark:text-[#ededed] font-semibold">{'<bbuilds/>'}</span> to solve a recurring problem he saw across startups and businesses: great ideas failing due to poor execution, unclear ownership, or fragile systems.
               </p>
               
-              <p className="text-lg text-[#0e0e0e] leading-relaxed">
-                At <span className="text-[#1e40af] font-semibold">{'<bbuilds/>'}</span>, he leads product direction, architecture decisions, and execution standards ensuring every project is built with clarity, accountability, and scalability in mind
+              <p className="text-lg text-[#0e0e0e] dark:text-white/80 leading-relaxed">
+                At <span className="text-[#1e40af] dark:text-[#ededed] font-semibold">{'<bbuilds/>'}</span>, he leads product direction, architecture decisions, and execution standards ensuring every project is built with clarity, accountability, and scalability in mind
               </p>
             </div>
           </div>
@@ -259,31 +112,31 @@ export default function Home() {
       </section>
 
       {/* Team Section */}
-      <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-[#f0f7fc] to-white">
+      <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-[#f0f7fc] to-white dark:from-[#101830] dark:to-[#0a0f1e] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#0e0e0e] mb-4">
-              <span className="text-[#1e40af]">{'<bbuilds/>'}</span> is powered by a small, focused team
+            <h2 className="text-3xl md:text-4xl font-bold text-[#0e0e0e] dark:text-white mb-4">
+              <span className="text-[#1e40af] dark:text-[#ededed]">{'<bbuilds/>'}</span> is powered by a small, focused team
             </h2>
           </div>
           
-          <p className="text-xl text-[#0e0e0e] text-center max-w-4xl mx-auto mb-16 leading-relaxed">
+          <p className="text-xl text-[#0e0e0e] dark:text-white/80 text-center max-w-4xl mx-auto mb-16 leading-relaxed">
             Deep problem-solving, execution, and iteration. We&apos;re not a large outsourced workforce — and we don&apos;t aim to be.
           </p>
 
           {/* Team Members Visual */}
-          <div className="relative bg-white rounded-3xl border border-[#1e40af]/10 p-12 shadow-lg mb-12">
+          <div className="relative bg-white dark:bg-[#10225d]/50 rounded-3xl border border-[#1e40af]/10 dark:border-white/10 p-12 shadow-lg dark:shadow-none mb-12">
             <div className="flex items-center justify-center gap-4 flex-wrap">
               {[1, 2, 3, 4, 5, 6, 7].map((i) => (
                 <div 
                   key={i} 
-                  className={`rounded-full bg-gradient-to-br from-[#c5defc] to-[#e8f4fc] border border-[#1e40af]/20 flex items-center justify-center
+                  className={`rounded-full bg-gradient-to-br from-[#c5defc] to-[#e8f4fc] dark:from-[#10225d] dark:to-[#152d7c] border border-[#1e40af]/20 dark:border-white/10 flex items-center justify-center
                     ${i === 4 ? 'w-32 h-32 z-10' : i === 3 || i === 5 ? 'w-24 h-24' : 'w-20 h-20'}
                   `}
                 >
                   <span className={`${i === 4 ? 'text-4xl' : 'text-2xl'}`}>👤</span>
                 </div>
-              ))}
+              ))}]
             </div>
           </div>
 
@@ -334,11 +187,11 @@ export default function Home() {
       </section>
 
       {/* What We Build Section */}
-      <section id="services" className="py-20 px-6 md:px-12 bg-gradient-to-b from-white to-[#f0f7fc]">
+      <section id="services" className="py-20 px-6 md:px-12 bg-gradient-to-b from-white to-[#f0f7fc] dark:from-[#0a0f1e] dark:to-[#101830] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] mb-4">What We Build</h2>
-            <p className="text-xl text-[#0e0e0e] max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] dark:text-white mb-4">What We Build</h2>
+            <p className="text-xl text-[#0e0e0e] dark:text-white/80 max-w-3xl mx-auto">
               End-to-end development services that transform your ideas into production-ready products
             </p>
           </div>
@@ -385,16 +238,16 @@ export default function Home() {
             ].map((service, index) => (
               <div 
                 key={index}
-                className="group p-8 rounded-3xl bg-white border border-[#1e40af]/10 shadow-lg hover:shadow-xl hover:border-[#1e40af]/30 transition-all duration-300 hover:-translate-y-1"
+                className="group p-8 rounded-3xl bg-white dark:bg-[#10225d]/50 border border-[#1e40af]/10 dark:border-white/10 shadow-lg dark:shadow-none hover:shadow-xl dark:hover:shadow-none hover:border-[#1e40af]/30 dark:hover:border-white/30 transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="text-5xl mb-6">{service.icon}</div>
-                <h3 className="text-2xl font-bold text-[#0e0e0e] mb-4">{service.title}</h3>
-                <p className="text-[#4762b8] mb-6 leading-relaxed">{service.description}</p>
+                <h3 className="text-2xl font-bold text-[#0e0e0e] dark:text-white mb-4">{service.title}</h3>
+                <p className="text-[#4762b8] dark:text-white/70 mb-6 leading-relaxed">{service.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {service.tags.map((tag) => (
                     <span 
                       key={tag}
-                      className="px-3 py-1 rounded-full bg-[#c5defc]/50 text-[#1e40af] text-sm font-medium"
+                      className="px-3 py-1 rounded-full bg-[#c5defc]/50 dark:bg-white/10 text-[#1e40af] dark:text-white/90 text-sm font-medium"
                     >
                       {tag}
                     </span>
@@ -407,11 +260,11 @@ export default function Home() {
       </section>
 
       {/* Case Studies Section */}
-      <section id="case-studies" className="py-20 px-6 md:px-12 bg-[#f0f7fc]">
+      <section id="case-studies" className="py-20 px-6 md:px-12 bg-[#f0f7fc] dark:bg-[#101830] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] mb-4">Case Studies</h2>
-            <p className="text-xl text-[#0e0e0e] max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] dark:text-white mb-4">Case Studies</h2>
+            <p className="text-xl text-[#0e0e0e] dark:text-white/80 max-w-3xl mx-auto">
               Real products. Real impact. Measurable results.
             </p>
           </div>
@@ -458,46 +311,46 @@ export default function Home() {
             ].map((study, index) => (
               <div 
                 key={index}
-                className="bg-white rounded-3xl border border-[#1e40af]/10 p-8 md:p-10 shadow-lg"
+                className="bg-white dark:bg-[#10225d]/50 rounded-3xl border border-[#1e40af]/10 dark:border-white/10 p-8 md:p-10 shadow-lg dark:shadow-none"
               >
                 <div className="grid md:grid-cols-3 gap-8">
                   <div className="space-y-4">
                     <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium
-                      ${study.color === 'blue' ? 'bg-blue-100 text-blue-700' : 
-                        study.color === 'purple' ? 'bg-purple-100 text-purple-700' : 
-                        'bg-orange-100 text-orange-700'}
+                      ${study.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 
+                        study.color === 'purple' ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300' : 
+                        'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300'}
                     `}>
                       {study.category}
                     </span>
                     <a href={study.url} target="_blank" rel="noopener noreferrer">
-                      <h3 className="text-2xl font-bold text-[#0e0e0e] hover:text-[#1e40af] transition-colors flex items-center gap-2">
+                      <h3 className="text-2xl font-bold text-[#0e0e0e] dark:text-white hover:text-[#1e40af] dark:hover:text-[#ededed] transition-colors flex items-center gap-2">
                         {study.title} <span className="text-lg">↗</span>
                       </h3>
                     </a>
                     <div className="space-y-3">
-                      <div className="p-4 rounded-xl bg-[#f0f7fc]">
-                        <p className="text-sm text-[#4762b8]">Key Result</p>
-                        <p className="font-bold text-[#0e0e0e]">{study.keyResult}</p>
+                      <div className="p-4 rounded-xl bg-[#f0f7fc] dark:bg-white/5">
+                        <p className="text-sm text-[#4762b8] dark:text-white/60">Key Result</p>
+                        <p className="font-bold text-[#0e0e0e] dark:text-white">{study.keyResult}</p>
                       </div>
-                      <div className="p-4 rounded-xl bg-[#f0f7fc]">
-                        <p className="text-sm text-[#4762b8]">Impact</p>
-                        <p className="font-bold text-[#0e0e0e]">{study.impact}</p>
+                      <div className="p-4 rounded-xl bg-[#f0f7fc] dark:bg-white/5">
+                        <p className="text-sm text-[#4762b8] dark:text-white/60">Impact</p>
+                        <p className="font-bold text-[#0e0e0e] dark:text-white">{study.impact}</p>
                       </div>
                     </div>
                   </div>
                   
                   <div className="md:col-span-2 space-y-4">
                     <div>
-                      <p className="text-sm font-semibold text-[#1e40af] mb-2">⚠️ Problem</p>
-                      <p className="text-[#4762b8]">{study.problem}</p>
+                      <p className="text-sm font-semibold text-[#1e40af] dark:text-[#ededed] mb-2">⚠️ Problem</p>
+                      <p className="text-[#4762b8] dark:text-white/70">{study.problem}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#1e40af] mb-2">💡 Solution</p>
-                      <p className="text-[#4762b8]">{study.solution}</p>
+                      <p className="text-sm font-semibold text-[#1e40af] dark:text-[#ededed] mb-2">💡 Solution</p>
+                      <p className="text-[#4762b8] dark:text-white/70">{study.solution}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#1e40af] mb-2">✅ Results</p>
-                      <ul className="space-y-1 text-[#4762b8]">
+                      <p className="text-sm font-semibold text-[#1e40af] dark:text-[#ededed] mb-2">✅ Results</p>
+                      <ul className="space-y-1 text-[#4762b8] dark:text-white/70">
                         {study.results.map((result, i) => (
                           <li key={i}>▸ {result}</li>
                         ))}
@@ -507,7 +360,7 @@ export default function Home() {
                       {study.tags.map((tag) => (
                         <span 
                           key={tag}
-                          className="px-3 py-1 rounded-full bg-[#c5defc]/50 text-[#1e40af] text-sm font-medium"
+                          className="px-3 py-1 rounded-full bg-[#c5defc]/50 dark:bg-white/10 text-[#1e40af] dark:text-white/90 text-sm font-medium"
                         >
                           {tag}
                         </span>
@@ -665,25 +518,19 @@ export default function Home() {
       </section>
 
       {/* Ready to Start Section */}
-      <section className="py-20 px-6 md:px-12 bg-white">
+      <section className="py-20 px-6 md:px-12 bg-white dark:bg-[#0a0f1e] transition-colors duration-500">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-[#0e0e0e] mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-[#0e0e0e] dark:text-white mb-6">
             Ready to Start Your Project?
           </h2>
-          <p className="text-xl text-[#0e0e0e] mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-[#0e0e0e] dark:text-white/80 mb-12 max-w-2xl mx-auto">
             Whether you&apos;re a startup building your MVP or an established business scaling your product, we&apos;re here to help you succeed.
           </p>
           <a
             href="https://cal.com/bbuilds/discovery-call"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-10 py-5 bg-[#c5defc] border-2 border-[#1e40af] rounded-full text-xl font-medium shadow-[0px_8px_24px_0px_rgba(30,64,175,0.4)] transition-all duration-300 hover:shadow-[0px_12px_32px_0px_rgba(30,64,175,0.5)] hover:scale-105"
-            style={{
-              background: 'linear-gradient(90deg, #1e40af 0%, #152d7c 32%, #0d1b49 53%, #152d7c 81%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
+            className="inline-flex items-center justify-center px-10 py-5 bg-[#c5defc] dark:bg-white/10 border-2 border-[#1e40af] dark:border-white/30 rounded-full text-xl font-medium shadow-[0px_8px_24px_0px_rgba(30,64,175,0.4)] dark:shadow-none transition-all duration-300 hover:shadow-[0px_12px_32px_0px_rgba(30,64,175,0.5)] hover:scale-105 gradient-text-light"
           >
             Get Your Free Consultation →
           </a>
@@ -691,57 +538,57 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#f0f7fc] border-t border-[#1e40af]/10 py-16 px-6 md:px-12">
+      <footer className="bg-[#f0f7fc] dark:bg-[#101830] border-t border-[#1e40af]/10 dark:border-white/10 py-16 px-6 md:px-12 transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             {/* Company Info */}
             <div className="md:col-span-1">
-              <p className="font-medium text-[#0e0e0e] text-3xl mb-4">{'<bbuilds/>'}</p>
-              <p className="text-[#4762b8] leading-relaxed">
+              <p className="font-medium text-[#0e0e0e] dark:text-white text-3xl mb-4">{'<bbuilds/>'}</p>
+              <p className="text-[#4762b8] dark:text-white/70 leading-relaxed">
                 Expert developers building production-ready products for startups and businesses.
               </p>
             </div>
 
             {/* Services */}
             <div>
-              <h4 className="font-medium text-[#152d7c] text-xl mb-4">Services</h4>
-              <ul className="space-y-3 text-[#4762b8]">
-                <li><a href="#services" className="hover:text-[#1e40af] transition-colors">Web Applications</a></li>
-                <li><a href="#services" className="hover:text-[#1e40af] transition-colors">SaaS Platforms</a></li>
-                <li><a href="#services" className="hover:text-[#1e40af] transition-colors">Mobile Apps</a></li>
-                <li><a href="#services" className="hover:text-[#1e40af] transition-colors">MVP Development</a></li>
+              <h4 className="font-medium text-[#152d7c] dark:text-white text-xl mb-4">Services</h4>
+              <ul className="space-y-3 text-[#4762b8] dark:text-white/70">
+                <li><a href="#services" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Web Applications</a></li>
+                <li><a href="#services" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">SaaS Platforms</a></li>
+                <li><a href="#services" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Mobile Apps</a></li>
+                <li><a href="#services" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">MVP Development</a></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h4 className="font-medium text-[#152d7c] text-xl mb-4">Company</h4>
-              <ul className="space-y-3 text-[#4762b8]">
-                <li><a href="#about" className="hover:text-[#1e40af] transition-colors">About</a></li>
-                <li><a href="#case-studies" className="hover:text-[#1e40af] transition-colors">Case Studies</a></li>
-                <li><a href="#case-studies" className="hover:text-[#1e40af] transition-colors">Portfolio</a></li>
-                <li><a href="mailto:contact@bbuilds.org" className="hover:text-[#1e40af] transition-colors">Contact</a></li>
+              <h4 className="font-medium text-[#152d7c] dark:text-white text-xl mb-4">Company</h4>
+              <ul className="space-y-3 text-[#4762b8] dark:text-white/70">
+                <li><a href="#about" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">About</a></li>
+                <li><a href="#case-studies" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Case Studies</a></li>
+                <li><a href="#case-studies" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Portfolio</a></li>
+                <li><a href="mailto:contact@bbuilds.org" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
 
             {/* Email Us */}
             <div>
-              <h4 className="font-medium text-[#152d7c] text-xl mb-4">Email Us:</h4>
-              <ul className="space-y-3 text-[#4762b8]">
-                <li><a href="mailto:sales@bbuilds.org" className="hover:text-[#1e40af] transition-colors">sales@bbuilds.org</a></li>
-                <li><a href="mailto:contact@bbuilds.org" className="hover:text-[#1e40af] transition-colors">contact@bbuilds.org</a></li>
+              <h4 className="font-medium text-[#152d7c] dark:text-white text-xl mb-4">Email Us:</h4>
+              <ul className="space-y-3 text-[#4762b8] dark:text-white/70">
+                <li><a href="mailto:sales@bbuilds.org" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">sales@bbuilds.org</a></li>
+                <li><a href="mailto:contact@bbuilds.org" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">contact@bbuilds.org</a></li>
               </ul>
             </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-[#1e40af]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[#152d7c]/50">
+          <div className="border-t border-[#1e40af]/10 dark:border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[#152d7c]/50 dark:text-white/50">
               © 2026 bbuilds. All rights reserved.
             </p>
-            <div className="flex gap-8 text-[#152d7c]/50">
-              <a href="#" className="hover:text-[#1e40af] transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-[#1e40af] transition-colors">Terms of Service</a>
+            <div className="flex gap-8 text-[#152d7c]/50 dark:text-white/50">
+              <a href="#" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-[#1e40af] dark:hover:text-white transition-colors">Terms of Service</a>
             </div>
           </div>
         </div>

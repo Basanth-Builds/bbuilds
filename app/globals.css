@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -56,7 +58,7 @@ body {
 
 /* Dark mode gradient text utility */
 .gradient-text-light {
-  background: linear-gradient(90deg, #1e40af 0%, #152d7c 50%, #0d1b49 100%);
+  background: linear-gradient(90deg, #152D7C 0%, #1E40AF 49.52%, #0D1B49 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
