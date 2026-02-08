@@ -141,7 +141,7 @@ export default function Navbar({ scrolled: externalScrolled }: NavbarProps) {
           <div className="hidden sm:flex items-center gap-3">
             {/* Secondary Button */}
             <a
-              href="#case-studies"
+              href='/client-portal'
               className="group relative px-6 py-3 rounded-full text-sm md:text-base font-medium overflow-hidden transition-all duration-300"
             >
               {/* Background layers */}
@@ -384,7 +384,7 @@ export default function Navbar({ scrolled: externalScrolled }: NavbarProps) {
             }}
           >
             <a
-              href="#case-studies"
+              href="/client-portal"
               onClick={() => setMobileMenuOpen(false)}
               className="group flex items-center justify-center gap-2 w-full px-6 py-4 bg-[#f5f5f6] dark:bg-white/10 border-2 border-[#1e40af]/30 dark:border-white/30 rounded-2xl text-base font-semibold transition-all duration-300 hover:border-[#1e40af]/60 dark:hover:border-white/60 hover:shadow-lg active:scale-95 gradient-text-light"
             >
