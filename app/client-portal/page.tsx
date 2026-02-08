@@ -11,7 +11,13 @@ export default function ClientPortal() {
 
   useEffect(() => {
     if (isLoaded && user) {
-      router.push("/dashboard");
+      // Check if user is admin
+      const adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+      if (adminId && user.id === adminId) {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     }
   }, [isLoaded, user, router]);
 
