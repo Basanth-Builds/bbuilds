@@ -14,6 +14,8 @@ export default function ClientPortal() {
   useEffect(() => {
     if (isLoaded && user && !redirecting) {
       const userEmail = user.primaryEmailAddress?.emailAddress;
+      // Note: NEXT_PUBLIC_ADMIN_EMAIL or similar should be used if we want this fully dynamic on client.
+      // For now, we use the known admin email.
       const adminEmail = 'basanth@bbuilds.org';
 
       setRedirecting(true);
