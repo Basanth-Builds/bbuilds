@@ -5,15 +5,21 @@ const isProtectedRoute = createRouteMatcher(['/dashboard(.*)', '/admin(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    const { userId } = await auth();
+    const { userId, sessionClaims } = await auth();
+
     if (!userId) {
       return NextResponse.redirect(new URL('/client-portal', req.url));
     }
 
-    // Block non-admin users from /admin routes
-    const adminId = process.env.ADMIN_USER_ID;
-    if (req.nextUrl.pathname.startsWith('/admin') && userId !== adminId) {
-      return NextResponse.redirect(new URL('/dashboard', req.url));
+    // Check for admin email in session claims for /admin routes
+    // NOTE: You must add "email" to your Clerk Session Token for this to work
+    if (req.nextUrl.pathname.startsWith('/admin')) {
+      const userEmail = sessionClaims?.email as string;
+      const adminEmail = 'basanth@bbuilds.org';
+
+      if (userEmail !== adminEmail) {
+        return NextResponse.redirect(new URL('/dashboard', req.url));
+      }
     }
   }
 });
