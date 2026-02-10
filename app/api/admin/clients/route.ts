@@ -2,6 +2,8 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'basanth@bbuilds.org';
+
 export async function GET() {
   const { userId } = await auth();
 
@@ -13,7 +15,7 @@ export async function GET() {
   const userObj = await clerk.users.getUser(userId);
   const userEmail = userObj.emailAddresses[0]?.emailAddress;
 
-  if (userEmail !== 'basanth@bbuilds.org') {
+  if (userEmail !== ADMIN_EMAIL) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
@@ -24,7 +26,7 @@ export async function GET() {
         *,
         projects (id)
       `)
-      .neq('email', 'basanth@bbuilds.org');
+      .neq('email', ADMIN_EMAIL);
 
     if (error) throw error;
 

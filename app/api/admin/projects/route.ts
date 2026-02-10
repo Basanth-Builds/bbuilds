@@ -2,7 +2,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 
-const ADMIN_EMAIL = 'basanth@bbuilds.org';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'basanth@bbuilds.org';
 
 async function verifyAdmin() {
     const { userId } = await auth();

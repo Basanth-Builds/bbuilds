@@ -15,7 +15,7 @@ export default clerkMiddleware(async (auth, req) => {
     if (req.nextUrl.pathname.startsWith('/admin')) {
       // 1. Try session claims (fastest)
       let userEmail = sessionClaims?.email as string;
-      const adminEmail = 'basanth@bbuilds.org';
+      const adminEmail = process.env.ADMIN_EMAIL || 'basanth@bbuilds.org';
 
       // 2. Fallback to Clerk API if claim is missing (production safety)
       if (!userEmail) {
