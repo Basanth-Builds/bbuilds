@@ -1,35 +1,46 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { supabaseAdmin } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   const { userId } = await auth();
-  const adminId = process.env.ADMIN_USER_ID;
 
-  if (!userId || userId !== adminId) {
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
+
+  const clerk = await clerkClient();
+  const userObj = await clerk.users.getUser(userId);
+  const userEmail = userObj.emailAddresses[0]?.emailAddress;
+
+  if (userEmail !== 'basanth@bbuilds.org') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
   try {
-    const clerk = await clerkClient();
-    const usersResponse = await clerk.users.getUserList({ limit: 100 });
-    const users = usersResponse.data;
+    const { data: profiles, error } = await supabaseAdmin
+      .from('profiles')
+      .select(`
+        *,
+        projects (id)
+      `)
+      .neq('email', 'basanth@bbuilds.org');
 
-    // Filter out the admin user, return only clients
-    const clients = users
-      .filter((u) => u.id !== adminId)
-      .map((u) => ({
-        id: u.id,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        email: u.emailAddresses[0]?.emailAddress || '',
-        imageUrl: u.imageUrl,
-        projectCount: Array.isArray(u.publicMetadata?.projects) ? (u.publicMetadata.projects as unknown[]).length : 0,
-        createdAt: u.createdAt,
-      }));
+    if (error) throw error;
+
+    const clients = profiles.map((p: any) => ({
+      id: p.clerk_id,
+      firstName: p.first_name,
+      lastName: p.last_name,
+      email: p.email,
+      imageUrl: p.avatar_url,
+      projectCount: p.projects?.length || 0,
+      createdAt: p.created_at,
+    }));
 
     return NextResponse.json({ clients });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error fetching clients:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

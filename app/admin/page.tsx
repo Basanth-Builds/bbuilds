@@ -3,12 +3,24 @@
 import { useUser, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Users,
+  Briefcase,
+  ArrowUpRight,
+  Search,
+  LayoutDashboard,
+  TrendingUp,
+  Activity,
+  Plus
+} from "lucide-react";
 
 interface ClientSummary {
   id: string;
   firstName: string | null;
   lastName: string | null;
   email: string;
+  imageUrl: string;
   projectCount: number;
 }
 
@@ -16,6 +28,7 @@ export default function AdminDashboard() {
   const { user, isLoaded } = useUser();
   const [clients, setClients] = useState<ClientSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function fetchClients() {
@@ -36,124 +49,145 @@ export default function AdminDashboard() {
     }
   }, [isLoaded, user]);
 
-  if (!isLoaded) {
+  const filteredClients = clients.filter(c =>
+    `${c.firstName} ${c.lastName} ${c.email}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalProjects = clients.reduce((sum, c) => sum + c.projectCount, 0);
+
+  if (!isLoaded || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#e8f4fc] to-white dark:from-[#0a0f1e] dark:to-[#101830] flex items-center justify-center">
-        <div className="animate-pulse text-[#1e40af] dark:text-white text-lg">Loading...</div>
+      <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  const totalProjects = clients.reduce((sum, c) => sum + c.projectCount, 0);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e8f4fc] via-[#f0f7fc] to-white dark:from-[#0a0f1e] dark:via-[#101830] dark:to-[#0a0f1e] transition-colors duration-500">
-      {/* Header */}
-      <header className="border-b border-[#1e40af]/10 dark:border-white/10 bg-white/80 dark:bg-[#0a0f1e]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <a href="/" className="font-medium text-[#0e0e0e] dark:text-white text-xl">
-              {'<bbuilds/>'}
-            </a>
-            <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#1e40af] text-white">
-              ADMIN
-            </span>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white transition-colors duration-500">
+      <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center">
+              <span className="text-white dark:text-slate-900 font-bold text-xs">BB</span>
+            </div>
+            <h1 className="font-bold text-xl tracking-tight hidden sm:block">Admin Console</h1>
           </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="/admin" className="text-[#1e40af] dark:text-white border-b-2 border-[#1e40af] dark:border-white pb-0.5">
-              Dashboard
-            </Link>
-            <Link href="/admin/clients" className="text-[#0e0e0e]/60 dark:text-white/60 hover:text-[#1e40af] dark:hover:text-white transition-colors">
-              Clients
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-[#0e0e0e]/70 dark:text-white/70 hidden sm:block">
-              {user?.primaryEmailAddress?.emailAddress}
-            </span>
+          <div className="flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/admin" className="text-sm font-bold text-blue-600 dark:text-blue-400">Dashboard</Link>
+              <Link href="/admin/clients" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">Clients</Link>
+            </nav>
             <UserButton afterSignOutUrl="/client-portal" />
           </div>
         </div>
       </header>
 
-      {/* Content */}
-      <main className="max-w-7xl mx-auto px-6 md:px-12 py-10">
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-[#0e0e0e] dark:text-white mb-2">Admin Dashboard</h1>
-          <p className="text-[#0e0e0e]/60 dark:text-white/60">Manage your clients and their projects.</p>
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="mb-12">
+          <h2 className="text-4xl font-black tracking-tight mb-2">Systems Overview</h2>
+          <p className="text-slate-500 dark:text-slate-400">Real-time status of all client engagements.</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-6">
-            <p className="text-sm text-[#0e0e0e]/50 dark:text-white/50 mb-1">Total Clients</p>
-            <p className="text-3xl font-bold text-[#1e40af] dark:text-white">
-              {loading ? '...' : clients.length}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-6">
-            <p className="text-sm text-[#0e0e0e]/50 dark:text-white/50 mb-1">Total Projects</p>
-            <p className="text-3xl font-bold text-[#1e40af] dark:text-white">
-              {loading ? '...' : totalProjects}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-6">
-            <p className="text-sm text-[#0e0e0e]/50 dark:text-white/50 mb-1">Quick Action</p>
-            <Link
-              href="/admin/clients"
-              className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-[#1e40af] text-white text-sm font-medium rounded-lg hover:bg-[#1e40af]/90 transition-colors"
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {[
+            { label: 'Total Clients', value: clients.length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/10' },
+            { label: 'Active Projects', value: totalProjects, icon: Briefcase, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/10' },
+            { label: 'Avg. Progress', value: '68%', icon: TrendingUp, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/10' },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm"
             >
-              Manage Clients
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
+              <div className={`w-12 h-12 ${stat.bg} rounded-2xl flex items-center justify-center mb-6`}>
+                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              </div>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+              <p className="text-4xl font-black">{stat.value}</p>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Recent Clients */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-[#0e0e0e] dark:text-white">Recent Clients</h2>
-            <Link href="/admin/clients" className="text-sm text-[#1e40af] dark:text-white/70 hover:underline">
-              View all →
-            </Link>
+        {/* Clients Table Section */}
+        <section className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+          <div className="p-8 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <Activity className="w-5 h-5 text-blue-600" />
+              <h3 className="text-xl font-bold tracking-tight">Client Directory</h3>
+            </div>
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search clients..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl py-3 pl-12 pr-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              />
+            </div>
           </div>
 
-          {loading ? (
-            <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-8 text-center">
-              <div className="animate-pulse text-[#0e0e0e]/50 dark:text-white/50">Loading clients...</div>
-            </div>
-          ) : clients.length === 0 ? (
-            <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-12 text-center">
-              <p className="text-[#0e0e0e]/50 dark:text-white/50">No clients have signed up yet.</p>
-            </div>
-          ) : (
-            <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 overflow-hidden">
-              <div className="divide-y divide-[#1e40af]/5 dark:divide-white/5">
-                {clients.slice(0, 5).map((client) => (
-                  <Link
-                    key={client.id}
-                    href={`/admin/clients/${client.id}`}
-                    className="flex items-center justify-between px-6 py-4 hover:bg-[#1e40af]/5 dark:hover:bg-white/5 transition-colors"
-                  >
-                    <div>
-                      <p className="font-medium text-[#0e0e0e] dark:text-white">
-                        {client.firstName} {client.lastName}
-                      </p>
-                      <p className="text-sm text-[#0e0e0e]/50 dark:text-white/50">{client.email}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-medium text-[#0e0e0e]/40 dark:text-white/40">
-                        {client.projectCount} project{client.projectCount !== 1 ? 's' : ''}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="text-left border-b border-slate-100 dark:border-slate-800">
+                  <th className="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Client</th>
+                  <th className="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Projects</th>
+                  <th className="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                  <th className="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                {filteredClients.map((client) => (
+                  <tr key={client.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <img src={client.imageUrl} className="w-12 h-12 rounded-2xl border border-slate-200 dark:border-slate-800" alt="" />
+                        <div>
+                          <p className="font-bold text-lg leading-tight">{client.firstName} {client.lastName}</p>
+                          <p className="text-sm text-slate-500">{client.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-2">
+                        <span className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center font-bold text-sm">
+                          {client.projectCount}
+                        </span>
+                        <span className="text-sm text-slate-500">Live</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800">
+                        <div className="w-1 h-1 bg-current rounded-full animate-pulse" />
+                        Active
                       </span>
-                      <svg className="w-4 h-4 text-[#0e0e0e]/30 dark:text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </Link>
+                    </td>
+                    <td className="px-8 py-6">
+                      <Link
+                        href={`/admin/clients/${client.id}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-xs font-bold hover:scale-105 transition-all shadow-lg"
+                      >
+                        Manage
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </td>
+                  </tr>
                 ))}
-              </div>
+              </tbody>
+            </table>
+          </div>
+
+          {filteredClients.length === 0 && (
+            <div className="p-20 text-center">
+              <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <h4 className="font-bold text-lg">No clients found</h4>
+              <p className="text-slate-500">Try adjusting your search query.</p>
             </div>
           )}
         </section>

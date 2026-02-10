@@ -4,13 +4,32 @@ import { useUser, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  Plus,
+  Trash2,
+  Save,
+  Layout,
+  Github,
+  ExternalLink,
+  Settings2,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Rocket,
+  Layers
+} from "lucide-react";
 
 interface Project {
+  id?: string;
   name: string;
   status: 'planning' | 'in-progress' | 'review' | 'completed';
   description: string;
-  updatedAt: string;
   progress: number;
+  github_url?: string;
+  demo_url?: string;
+  updated_at?: string;
 }
 
 interface ClientDetail {
@@ -24,19 +43,11 @@ interface ClientDetail {
 }
 
 const statusOptions = [
-  { value: 'planning', label: 'Planning' },
-  { value: 'in-progress', label: 'In Progress' },
-  { value: 'review', label: 'In Review' },
-  { value: 'completed', label: 'Completed' },
-];
-
-const emptyProject: Project = {
-  name: '',
-  status: 'planning',
-  description: '',
-  updatedAt: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-  progress: 0,
-};
+  { value: 'planning', label: 'Planning', icon: Clock, color: 'text-amber-500' },
+  { value: 'in-progress', label: 'In Progress', icon: Rocket, color: 'text-blue-500' },
+  { value: 'review', label: 'In Review', icon: Layers, color: 'text-purple-500' },
+  { value: 'completed', label: 'Completed', icon: CheckCircle2, color: 'text-emerald-500' },
+] as const;
 
 export default function AdminClientDetail() {
   const { user, isLoaded } = useUser();
@@ -48,8 +59,7 @@ export default function AdminClientDetail() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState('');
+  const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
   useEffect(() => {
     async function fetchClient() {
@@ -60,10 +70,10 @@ export default function AdminClientDetail() {
           setClient(data.client);
           setProjects(data.client.projects || []);
         } else {
-          setError('Client not found');
+          setNotification({ type: 'error', message: 'Client not found' });
         }
       } catch {
-        setError('Failed to load client');
+        setNotification({ type: 'error', message: 'Failed to load client' });
       } finally {
         setLoading(false);
       }
@@ -74,253 +84,316 @@ export default function AdminClientDetail() {
   }, [isLoaded, user, clientId]);
 
   const addProject = () => {
-    setProjects([...projects, { ...emptyProject, updatedAt: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }]);
+    const newProject: Project = {
+      name: '',
+      status: 'planning',
+      description: '',
+      progress: 0,
+    };
+    setProjects([newProject, ...projects]);
   };
 
-  const removeProject = (index: number) => {
+  const removeProject = async (index: number) => {
+    const project = projects[index];
+    if (project.id) {
+      if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
+
+      try {
+        const res = await fetch(`/api/admin/projects?id=${project.id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete');
+      } catch (err) {
+        setNotification({ type: 'error', message: 'Failed to delete project from database' });
+        return;
+      }
+    }
     setProjects(projects.filter((_, i) => i !== index));
   };
 
-  const updateProject = (index: number, field: keyof Project, value: string | number) => {
+  const updateProject = (index: number, updates: Partial<Project>) => {
     const updated = [...projects];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], ...updates };
     setProjects(updated);
   };
 
-  const saveProjects = async () => {
+  const handleSave = async () => {
     setSaving(true);
-    setSaved(false);
-    setError('');
+    setNotification(null);
     try {
-      // Update timestamps on modified projects
-      const projectsWithTimestamp = projects.map((p) => ({
-        ...p,
-        updatedAt: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-      }));
+      for (const project of projects) {
+        const method = project.id ? 'PATCH' : 'POST';
+        const res = await fetch('/api/admin/projects', {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...project, client_id: clientId }),
+        });
 
-      const res = await fetch(`/api/admin/clients/${clientId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projects: projectsWithTimestamp }),
-      });
-
-      if (res.ok) {
-        setProjects(projectsWithTimestamp);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
-      } else {
-        const data = await res.json();
-        setError(data.error || 'Failed to save');
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Failed to save a project');
+        }
       }
-    } catch {
-      setError('Failed to save projects');
+
+      setNotification({ type: 'success', message: 'All projects saved successfully' });
+      // Refresh data
+      const res = await fetch(`/api/admin/clients/${clientId}`);
+      const data = await res.json();
+      setProjects(data.client.projects || []);
+
+    } catch (err: any) {
+      setNotification({ type: 'error', message: err.message });
     } finally {
       setSaving(false);
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
-  if (!isLoaded) {
+  if (!isLoaded || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#e8f4fc] to-white dark:from-[#0a0f1e] dark:to-[#101830] flex items-center justify-center">
-        <div className="animate-pulse text-[#1e40af] dark:text-white text-lg">Loading...</div>
+      <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e8f4fc] via-[#f0f7fc] to-white dark:from-[#0a0f1e] dark:via-[#101830] dark:to-[#0a0f1e] transition-colors duration-500">
-      {/* Header */}
-      <header className="border-b border-[#1e40af]/10 dark:border-white/10 bg-white/80 dark:bg-[#0a0f1e]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <a href="/" className="font-medium text-[#0e0e0e] dark:text-white text-xl">
-              {'<bbuilds/>'}
-            </a>
-            <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#1e40af] text-white">
-              ADMIN
-            </span>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white transition-colors duration-500">
+      <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/admin/clients" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5" />
+            </Link>
+            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
+            <h1 className="font-bold text-lg tracking-tight">Manage Client</h1>
           </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="/admin" className="text-[#0e0e0e]/60 dark:text-white/60 hover:text-[#1e40af] dark:hover:text-white transition-colors">
-              Dashboard
-            </Link>
-            <Link href="/admin/clients" className="text-[#1e40af] dark:text-white border-b-2 border-[#1e40af] dark:border-white pb-0.5">
-              Clients
-            </Link>
-          </nav>
           <div className="flex items-center gap-4">
             <UserButton afterSignOutUrl="/client-portal" />
           </div>
         </div>
       </header>
 
-      {/* Content */}
-      <main className="max-w-4xl mx-auto px-6 md:px-12 py-10">
-        {/* Back link */}
-        <Link href="/admin/clients" className="inline-flex items-center gap-2 text-sm text-[#1e40af] dark:text-white/70 hover:text-[#0d1b49] dark:hover:text-white mb-6 transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Clients
-        </Link>
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`mb-8 p-4 rounded-2xl border flex items-center gap-3 ${notification.type === 'success'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400'
+                  : 'bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400'
+                }`}
+            >
+              {notification.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+              <p className="text-sm font-semibold">{notification.message}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {loading ? (
-          <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-12 text-center">
-            <div className="animate-pulse text-[#0e0e0e]/50 dark:text-white/50">Loading client...</div>
-          </div>
-        ) : error && !client ? (
-          <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-red-200 dark:border-red-800/30 p-12 text-center">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
-            <button onClick={() => router.push('/admin/clients')} className="mt-4 text-sm text-[#1e40af] dark:text-white/70 hover:underline">
-              Go back
-            </button>
-          </div>
-        ) : client ? (
-          <>
-            {/* Client Info */}
-            <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-6 mb-8">
-              <div className="flex items-center gap-4">
-                <img src={client.imageUrl} alt="" className="w-14 h-14 rounded-full border-2 border-[#1e40af]/20 dark:border-white/20" />
-                <div>
-                  <h1 className="text-2xl font-bold text-[#0e0e0e] dark:text-white">
-                    {client.firstName || ''} {client.lastName || ''}
-                    {!client.firstName && !client.lastName && <span className="text-[#0e0e0e]/40 dark:text-white/40 italic">No name set</span>}
-                  </h1>
-                  <p className="text-sm text-[#0e0e0e]/60 dark:text-white/60">{client.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Projects Editor */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#0e0e0e] dark:text-white">
-                Projects ({projects.length})
+        {/* Client Identity */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 mb-12 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <img src={client?.imageUrl} alt="" className="w-24 h-24 rounded-3xl border-4 border-slate-50 dark:border-slate-800 shadow-xl" />
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-3xl font-black tracking-tight mb-2">
+                {client?.firstName} {client?.lastName}
               </h2>
+              <p className="text-slate-500 dark:text-slate-400 flex items-center justify-center md:justify-start gap-2">
+                {client?.email}
+                <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
+                Joined {new Date(client?.createdAt || '').toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
               <button
                 onClick={addProject}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#1e40af] text-white text-sm font-medium rounded-lg hover:bg-[#1e40af]/90 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/25"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Project
+                <Plus className="w-5 h-5" />
+                New Project
               </button>
             </div>
+          </div>
+        </div>
 
-            {error && (
-              <div className="mb-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/30 text-red-700 dark:text-red-400 text-sm">
-                {error}
-              </div>
-            )}
+        {/* Projects List */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <Layout className="w-5 h-5 text-blue-500" />
+              Projects
+            </h3>
+            <span className="px-3 py-1 bg-slate-200 dark:bg-slate-800 rounded-full text-xs font-bold text-slate-500 uppercase tracking-widest">
+              {projects.length} Total
+            </span>
+          </div>
 
-            {saved && (
-              <div className="mb-4 p-3 rounded-lg bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800/30 text-green-700 dark:text-green-400 text-sm">
-                Projects saved successfully! The client will see the updates on their dashboard.
-              </div>
-            )}
-
+          <AnimatePresence mode="popLayout">
             {projects.length === 0 ? (
-              <div className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-dashed border-[#1e40af]/20 dark:border-white/10 p-12 text-center">
-                <p className="text-[#0e0e0e]/50 dark:text-white/50 mb-4">No projects assigned to this client yet.</p>
-                <button
-                  onClick={addProject}
-                  className="text-sm text-[#1e40af] dark:text-white/70 hover:underline"
-                >
-                  + Add their first project
-                </button>
-              </div>
+              <motion.div
+                layout
+                className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 p-16 text-center"
+              >
+                <Plus className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                <h4 className="font-bold text-lg mb-2">No projects yet</h4>
+                <p className="text-slate-500 dark:text-slate-400 mb-8">Click the button above to start tracking a new project for this client.</p>
+              </motion.div>
             ) : (
-              <div className="space-y-6">
+              <div className="grid gap-8">
                 {projects.map((project, index) => (
-                  <div key={index} className="bg-white dark:bg-[#10225d]/30 rounded-2xl border border-[#1e40af]/10 dark:border-white/10 p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <span className="text-xs font-medium text-[#0e0e0e]/40 dark:text-white/40 uppercase tracking-wider">
-                        Project {index + 1}
-                      </span>
-                      <button
-                        onClick={() => removeProject(index)}
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xs font-medium transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                  <motion.div
+                    key={project.id || `new-${index}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm"
+                  >
+                    <div className="p-8">
+                      <div className="flex flex-col md:flex-row gap-8">
+                        <div className="flex-1 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Project Name</label>
+                              <input
+                                type="text"
+                                value={project.name}
+                                onChange={(e) => updateProject(index, { name: e.target.value })}
+                                placeholder="e.g., Cloud Infrastructure Audit"
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-semibold"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Current Status</label>
+                              <div className="relative">
+                                <select
+                                  value={project.status}
+                                  onChange={(e) => updateProject(index, { status: e.target.value as any })}
+                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none appearance-none transition-all font-semibold"
+                                >
+                                  {statusOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                  ))}
+                                </select>
+                                <Settings2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                              </div>
+                            </div>
+                          </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Name */}
-                      <div>
-                        <label className="block text-xs font-medium text-[#0e0e0e]/60 dark:text-white/60 mb-1">Project Name</label>
-                        <input
-                          type="text"
-                          value={project.name}
-                          onChange={(e) => updateProject(index, 'name', e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-[#f5f5f6] dark:bg-[#0a0f1e]/50 border border-[#1e40af]/10 dark:border-white/10 text-sm text-[#0e0e0e] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1e40af]/30"
-                          placeholder="e.g. E-commerce Platform"
-                        />
-                      </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Description</label>
+                            <textarea
+                              value={project.description}
+                              onChange={(e) => updateProject(index, { description: e.target.value })}
+                              rows={3}
+                              placeholder="What are we building?"
+                              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none text-sm leading-relaxed"
+                            />
+                          </div>
 
-                      {/* Status */}
-                      <div>
-                        <label className="block text-xs font-medium text-[#0e0e0e]/60 dark:text-white/60 mb-1">Status</label>
-                        <select
-                          value={project.status}
-                          onChange={(e) => updateProject(index, 'status', e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-[#f5f5f6] dark:bg-[#0a0f1e]/50 border border-[#1e40af]/10 dark:border-white/10 text-sm text-[#0e0e0e] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1e40af]/30"
-                        >
-                          {statusOptions.map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Description */}
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-[#0e0e0e]/60 dark:text-white/60 mb-1">Description</label>
-                        <textarea
-                          value={project.description}
-                          onChange={(e) => updateProject(index, 'description', e.target.value)}
-                          rows={2}
-                          className="w-full px-3 py-2 rounded-lg bg-[#f5f5f6] dark:bg-[#0a0f1e]/50 border border-[#1e40af]/10 dark:border-white/10 text-sm text-[#0e0e0e] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1e40af]/30 resize-none"
-                          placeholder="Brief description of the project..."
-                        />
-                      </div>
-
-                      {/* Progress */}
-                      <div className="md:col-span-2">
-                        <div className="flex items-center justify-between mb-1">
-                          <label className="block text-xs font-medium text-[#0e0e0e]/60 dark:text-white/60">Progress</label>
-                          <span className="text-xs font-semibold text-[#1e40af] dark:text-white">{project.progress}%</span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Github className="w-3.5 h-3.5" />
+                                GitHub URL
+                              </label>
+                              <input
+                                type="url"
+                                value={project.github_url || ''}
+                                onChange={(e) => updateProject(index, { github_url: e.target.value })}
+                                placeholder="https://github.com/..."
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                Demo URL
+                              </label>
+                              <input
+                                type="url"
+                                value={project.demo_url || ''}
+                                onChange={(e) => updateProject(index, { demo_url: e.target.value })}
+                                placeholder="https://..."
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm"
+                              />
+                            </div>
+                          </div>
                         </div>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          step="5"
-                          value={project.progress}
-                          onChange={(e) => updateProject(index, 'progress', parseInt(e.target.value))}
-                          className="w-full h-2 bg-[#1e40af]/10 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#1e40af]"
-                        />
+
+                        <div className="w-full md:w-72 bg-slate-50 dark:bg-slate-950 rounded-3xl p-8 flex flex-col justify-between border border-slate-100 dark:border-slate-900">
+                          <div className="space-y-6">
+                            <div className="flex justify-between items-end">
+                              <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Progress</label>
+                              <span className="text-3xl font-black text-blue-600 dark:text-blue-400">{project.progress}%</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="5"
+                              value={project.progress}
+                              onChange={(e) => updateProject(index, { progress: parseInt(e.target.value) })}
+                              className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-blue-600"
+                            />
+                            <div className="grid grid-cols-5 gap-1">
+                              {[0, 25, 50, 75, 100].map(val => (
+                                <button
+                                  key={val}
+                                  onClick={() => updateProject(index, { progress: val })}
+                                  className={`text-[10px] font-bold py-1 rounded-md transition-all ${project.progress === val
+                                      ? 'bg-blue-600 text-white shadow-lg'
+                                      : 'bg-white dark:bg-slate-900 text-slate-400 hover:text-slate-600'
+                                    }`}
+                                >
+                                  {val}%
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="pt-8 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 mt-8">
+                            <button
+                              onClick={() => removeProject(index)}
+                              className="flex items-center gap-2 text-rose-500 hover:text-rose-600 text-xs font-bold transition-colors group"
+                            >
+                              <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                              Delete
+                            </button>
+                            {project.id && (
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                ID: {project.id.split('-')[0]}...
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             )}
+          </AnimatePresence>
+        </div>
 
-            {/* Save Button */}
-            <div className="mt-8 flex items-center justify-end gap-4">
-              <Link href="/admin/clients" className="px-6 py-3 text-sm font-medium text-[#0e0e0e]/60 dark:text-white/60 hover:text-[#0e0e0e] dark:hover:text-white transition-colors">
-                Cancel
-              </Link>
-              <button
-                onClick={saveProjects}
-                disabled={saving}
-                className="px-8 py-3 bg-[#1e40af] text-white text-sm font-semibold rounded-xl hover:bg-[#1e40af]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#1e40af]/20"
-              >
-                {saving ? 'Saving...' : 'Save Projects'}
-              </button>
-            </div>
-          </>
-        ) : null}
+        {/* Global Actions */}
+        <div className="fixed bottom-8 right-8 left-8 md:left-auto md:w-auto">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full flex items-center justify-center gap-3 px-12 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-lg shadow-2xl disabled:opacity-50 transition-all border border-slate-800 dark:border-slate-200"
+          >
+            {saving ? (
+              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <Save className="w-6 h-6" />
+                Commit Updates
+              </>
+            )}
+          </motion.button>
+        </div>
       </main>
     </div>
   );
