@@ -1,10 +1,10 @@
 'use client';
 
-import { useUser, SignIn } from "@clerk/nextjs";
+import { useUser, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Sparkles, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Sparkles, ShieldCheck, Loader2 } from "lucide-react";
 
 export default function ClientPortal() {
   const { user, isLoaded } = useUser();
@@ -91,30 +91,50 @@ export default function ClientPortal() {
           className="w-full max-w-md"
         >
           <div className="bg-white/5 p-1 rounded-[2.5rem] shadow-2xl">
-            <div className="bg-[#020617] rounded-[2.2rem] p-4">
-              <SignIn
-                routing="hash"
-                forceRedirectUrl="/dashboard"
-                signUpForceRedirectUrl="/dashboard"
-                appearance={{
-                  elements: {
-                    rootBox: "w-full",
-                    card: "bg-transparent shadow-none border-none p-4",
-                    headerTitle: "text-white text-2xl font-bold",
-                    headerSubtitle: "text-slate-400",
-                    socialButtonsBlockButton: "bg-slate-800 border-slate-700 text-white hover:bg-slate-700 transition-all",
-                    socialButtonsBlockButtonText: "text-white font-medium",
-                    dividerLine: "bg-slate-800",
-                    dividerText: "text-slate-500",
-                    formFieldLabel: "text-slate-400 font-bold uppercase tracking-widest text-[10px]",
-                    formFieldInput: "bg-slate-900 border-slate-800 text-white rounded-xl focus:ring-blue-500",
-                    formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-bold transition-all shadow-lg shadow-blue-500/25",
-                    footerActionLink: "text-blue-400 hover:text-blue-300",
-                    identityPreviewText: "text-white",
-                    userButtonPopoverCard: "bg-slate-900 border-slate-800 text-white"
-                  }
-                }}
-              />
+            <div className="bg-[#020617] rounded-[2.2rem] p-4 flex items-center justify-center min-h-[400px]">
+              {!isLoaded ? (
+                <div className="flex flex-col items-center gap-4">
+                  <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+                  <p className="text-slate-500 text-sm font-medium animate-pulse">Initializing vault...</p>
+                </div>
+              ) : (
+                <>
+                  <SignedOut>
+                    <SignIn
+                      routing="hash"
+                      forceRedirectUrl="/dashboard"
+                      signUpForceRedirectUrl="/dashboard"
+                      appearance={{
+                        elements: {
+                          rootBox: "w-full",
+                          card: "bg-transparent shadow-none border-none p-4",
+                          headerTitle: "text-white text-2xl font-bold",
+                          headerSubtitle: "text-slate-400",
+                          socialButtonsBlockButton: "bg-slate-800 border-slate-700 text-white hover:bg-slate-700 transition-all",
+                          socialButtonsBlockButtonText: "text-white font-medium",
+                          dividerLine: "bg-slate-800",
+                          dividerText: "text-slate-500",
+                          formFieldLabel: "text-slate-400 font-bold uppercase tracking-widest text-[10px]",
+                          formFieldInput: "bg-slate-900 border-slate-800 text-white rounded-xl focus:ring-blue-500",
+                          formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-bold transition-all shadow-lg shadow-blue-500/25",
+                          footerActionLink: "text-blue-400 hover:text-blue-300",
+                          identityPreviewText: "text-white",
+                          userButtonPopoverCard: "bg-slate-900 border-slate-800 text-white"
+                        }
+                      }}
+                    />
+                  </SignedOut>
+                  <SignedIn>
+                    <div className="flex flex-col items-center gap-4 py-12">
+                      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                      <div className="space-y-1 text-center">
+                        <p className="text-white font-bold text-lg">Identity Verified</p>
+                        <p className="text-slate-500 text-sm">Transferring you to your workspace...</p>
+                      </div>
+                    </div>
+                  </SignedIn>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
