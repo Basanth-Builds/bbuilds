@@ -2,26 +2,31 @@
 
 import { useUser, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles, ShieldCheck, Loader2 } from "lucide-react";
 
 export default function ClientPortal() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (isLoaded && user) {
+    if (isLoaded && user && !redirecting) {
       const userEmail = user.primaryEmailAddress?.emailAddress;
       const adminEmail = 'basanth@bbuilds.org';
 
+      setRedirecting(true);
+
       if (userEmail === adminEmail) {
-        router.push("/admin");
+        console.log("Redirecting admin to /admin");
+        router.replace("/admin");
       } else {
-        router.push("/dashboard");
+        console.log("Redirecting client to /dashboard");
+        router.replace("/dashboard");
       }
     }
-  }, [isLoaded, user, router]);
+  }, [isLoaded, user, router, redirecting]);
 
   return (
     <div className="min-h-screen bg-[#020617] text-white flex flex-col md:flex-row overflow-hidden">
@@ -95,7 +100,7 @@ export default function ClientPortal() {
               {!isLoaded ? (
                 <div className="flex flex-col items-center gap-4">
                   <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                  <p className="text-slate-500 text-sm font-medium animate-pulse">Initializing vault...</p>
+                  <p className="text-slate-500 text-sm font-medium animate-pulse">Checking credentials...</p>
                 </div>
               ) : (
                 <>
@@ -125,11 +130,14 @@ export default function ClientPortal() {
                     />
                   </SignedOut>
                   <SignedIn>
-                    <div className="flex flex-col items-center gap-4 py-12">
-                      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                      <div className="space-y-1 text-center">
-                        <p className="text-white font-bold text-lg">Identity Verified</p>
-                        <p className="text-slate-500 text-sm">Transferring you to your workspace...</p>
+                    <div className="flex flex-col items-center gap-4 py-12 text-center">
+                      <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(37,99,235,0.4)]" />
+                      <div className="space-y-1">
+                        <p className="text-white font-black text-xl tracking-tight">Identity Verified</p>
+                        <p className="text-slate-500 text-sm">Synchronizing your workspace...</p>
+                        {user && (
+                          <p className="text-blue-400/60 text-xs font-mono mt-4">{user.primaryEmailAddress?.emailAddress}</p>
+                        )}
                       </div>
                     </div>
                   </SignedIn>
