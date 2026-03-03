@@ -193,10 +193,10 @@ export default function VentureStudio() {
                                 <motion.div
                                     key={index}
                                     whileHover={{ scale: 1.02, backgroundColor: "rgba(254, 242, 242, 1)" }}
-                                    className="flex items-center gap-5 bg-white dark:bg-black/20 p-6 rounded-2xl border border-red-100 dark:border-red-500/10 shadow-sm transition-colors"
+                                    className="group flex items-center gap-5 bg-white dark:bg-black/20 p-6 rounded-2xl border border-red-100 dark:border-red-500/10 shadow-sm transition-colors"
                                 >
                                     <XCircle className="w-8 h-8 text-red-500 shrink-0" />
-                                    <p className="text-lg font-medium text-[#0e0e0e] dark:text-white/90">{item}</p>
+                                    <p className="text-lg font-medium text-[#0e0e0e] dark:text-white/90 group-hover:text-[#1a1a1a] dark:group-hover:text-[#0e0e0e] transition-colors duration-200">{item}</p>
                                 </motion.div>
                             ))}
                         </div>

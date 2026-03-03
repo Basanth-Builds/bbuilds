@@ -18,7 +18,7 @@ export default function HeroSection() {
           {/* Main Heading */}
           <div className="space-y-0">
             <h1 
-              className={`font-bold gradient-text-light transform transition-all duration-1000 text-[30px] sm:text-[35px] md:text-[42px] lg:text-[50px] leading-[33px] sm:leading-[39px] md:leading-[47px] lg:leading-[56px] ${
+              className={`font-bold gradient-text-light transform transition-[transform,opacity] duration-1000 text-[30px] sm:text-[35px] md:text-[42px] lg:text-[50px] leading-[33px] sm:leading-[39px] md:leading-[47px] lg:leading-[56px] ${
                 isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
               }`}
               style={{
@@ -29,7 +29,7 @@ export default function HeroSection() {
               From idea to impact
             </h1>
             <h1 
-              className={`font-bold gradient-text-light transform transition-all duration-1000 delay-100 text-[30px] sm:text-[35px] md:text-[42px] lg:text-[50px] leading-[33px] sm:leading-[39px] md:leading-[47px] lg:leading-[56px] ${
+              className={`font-bold gradient-text-light transform transition-[transform,opacity] duration-1000 delay-100 text-[30px] sm:text-[35px] md:text-[42px] lg:text-[50px] leading-[33px] sm:leading-[39px] md:leading-[47px] lg:leading-[56px] ${
                 isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
               }`}
               style={{
@@ -43,7 +43,7 @@ export default function HeroSection() {
 
           {/* Subtitle */}
           <p 
-            className={`text-xl md:text-2xl text-[#0e0e0e] dark:text-white/90 font-medium leading-relaxed max-w-2xl transform transition-all duration-1000 delay-200 ${
+            className={`text-xl md:text-2xl text-[#0e0e0e] dark:text-white/90 font-medium leading-relaxed max-w-2xl transform transition-[transform,opacity] duration-1000 delay-200 ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
             }`}
           >
@@ -55,7 +55,7 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div 
-            className={`flex flex-wrap gap-6 pt-4 transform transition-all duration-1000 delay-300 ${
+            className={`flex flex-wrap gap-6 pt-4 transform transition-[transform,opacity] duration-1000 delay-300 ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
             }`}
           >
@@ -117,7 +117,7 @@ export default function HeroSection() {
 
         {/* Right Content - Rotating Geosphere */}
         <div 
-          className={`relative flex items-center justify-end lg:justify-start transform transition-all duration-1000 delay-400 ${
+          className={`relative flex items-center justify-end lg:justify-end lg:ml-auto lg:translate-x-32 transform transition-[transform,opacity] duration-1000 delay-400 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >

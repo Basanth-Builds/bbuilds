@@ -35,39 +35,113 @@ export default function Home() {
           </div>
 
           {/* Focus Areas */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
-            {['Timelines', 'Budgets', 'Performance', 'Long-term maintainability'].map((item, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
+            {[
+              { label: 'Timelines', icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              )},
+              { label: 'Budgets', icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                </svg>
+              )},
+              { label: 'Performance', icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                </svg>
+              )},
+              { label: 'Long-term maintainability', icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
+              )},
+            ].map((item) => (
               <div 
-                key={item} 
-                className={`p-8 rounded-2xl text-center ${
-                  index < 2 
-                    ? 'bg-white dark:bg-[#10225d]/50 border border-[#1e40af]/20 dark:border-white/10 shadow-lg dark:shadow-none' 
-                    : 'bg-transparent'
-                }`}
+                key={item.label} 
+                className="group relative p-8 rounded-2xl text-center bg-white dark:bg-[#10225d]/30 border border-[#1e40af]/10 dark:border-white/10 hover:border-[#1e40af]/30 dark:hover:border-white/20 shadow-sm hover:shadow-lg dark:shadow-none transition-all duration-300 hover:-translate-y-1"
               >
-                <span className="text-xl md:text-2xl font-medium text-[#0e0e0e] dark:text-white">{item}</span>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-[#1e40af]/5 dark:bg-white/5 flex items-center justify-center text-[#1e40af] dark:text-white/80 group-hover:bg-[#1e40af]/10 dark:group-hover:bg-white/10 transition-colors duration-300">
+                    {item.icon}
+                  </div>
+                  <span className="text-lg md:text-xl font-semibold text-[#0e0e0e] dark:text-white">{item.label}</span>
+                </div>
               </div>
             ))}
           </div>
 
           {/* Venn Diagram Section */}
           <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-            {/* Venn Diagram */}
-            <div className="relative flex items-center justify-center">
-              <div className="relative w-80 h-80 md:w-96 md:h-96">
-                {/* Three overlapping circles */}
-                <div className="absolute top-0 left-1/4 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 dark:border-white/20 bg-[#1e40af]/5 dark:bg-white/5"></div>
-                <div className="absolute top-0 right-1/4 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 dark:border-white/20 bg-[#1e40af]/5 dark:bg-white/5"></div>
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-[#1e40af]/30 dark:border-white/20 bg-[#1e40af]/5 dark:bg-white/5"></div>
-                {/* Center */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#1e40af] dark:text-white font-medium text-lg">
+            {/* Animated Venn Diagram */}
+            <div className="relative flex items-center justify-center py-8">
+              <svg viewBox="0 0 500 460" className="w-full max-w-md md:max-w-lg" xmlns="http://www.w3.org/2000/svg">
+                {/* Definitions */}
+                <defs>
+                  {/* Intersection clip for center highlight */}
+                  <clipPath id="clip-intersection">
+                    <circle cx="250" cy="170" r="120" />
+                  </clipPath>
+                </defs>
+
+                {/* Top-left circle - Product Thinking */}
+                <circle cx="200" cy="185" r="120" className="fill-[#1e40af]/[0.06] dark:fill-white/[0.04] stroke-[#1e40af]/25 dark:stroke-white/15" strokeWidth="1.5">
+                  <animate attributeName="r" values="120;123;120" dur="4s" repeatCount="indefinite" />
+                </circle>
+
+                {/* Top-right circle - Engineering */}
+                <circle cx="300" cy="185" r="120" className="fill-[#1e40af]/[0.06] dark:fill-white/[0.04] stroke-[#1e40af]/25 dark:stroke-white/15" strokeWidth="1.5">
+                  <animate attributeName="r" values="120;123;120" dur="4s" begin="1.3s" repeatCount="indefinite" />
+                </circle>
+
+                {/* Bottom circle - Execution */}
+                <circle cx="250" cy="275" r="120" className="fill-[#1e40af]/[0.06] dark:fill-white/[0.04] stroke-[#1e40af]/25 dark:stroke-white/15" strokeWidth="1.5">
+                  <animate attributeName="r" values="120;123;120" dur="4s" begin="2.6s" repeatCount="indefinite" />
+                </circle>
+
+                {/* Center glow */}
+                <circle cx="250" cy="210" r="35" className="fill-[#1e40af]/10 dark:fill-white/10">
+                  <animate attributeName="r" values="35;40;35" dur="3s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" />
+                </circle>
+
+                {/* Orbiting dot around center */}
+                <circle r="3" className="fill-[#1e40af]/40 dark:fill-white/40">
+                  <animateMotion dur="6s" repeatCount="indefinite" path="M250,210 m-30,0 a30,30 0 1,1 60,0 a30,30 0 1,1 -60,0" />
+                </circle>
+
+                {/* Center text - bbuilds */}
+                <text x="250" y="215" textAnchor="middle" className="fill-[#1e40af] dark:fill-white text-base font-semibold" style={{ fontSize: '16px', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
                   {'<bbuilds/>'}
-                </div>
-                {/* Labels */}
-                <span className="absolute top-4 left-0 text-sm font-medium text-[#0e0e0e] dark:text-white/90">Product Thinking</span>
-                <span className="absolute top-4 right-0 text-sm font-medium text-[#0e0e0e] dark:text-white/90">Engineering</span>
-                <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-medium text-[#0e0e0e] dark:text-white/90">Execution</span>
-              </div>
+                </text>
+
+                {/* Label - Product Thinking (top-left) */}
+                <text x="160" y="135" textAnchor="middle" className="fill-[#0e0e0e] dark:fill-white/90" style={{ fontSize: '14px', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                  Product Thinking
+                </text>
+
+                {/* Label - Engineering (top-right) */}
+                <text x="340" y="135" textAnchor="middle" className="fill-[#0e0e0e] dark:fill-white/90" style={{ fontSize: '14px', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                  Engineering
+                </text>
+
+                {/* Label - Execution (bottom) */}
+                <text x="250" y="380" textAnchor="middle" className="fill-[#0e0e0e] dark:fill-white/90" style={{ fontSize: '14px', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                  Execution
+                </text>
+
+                {/* Connecting pulse lines from circles toward center */}
+                <line x1="185" y1="155" x2="235" y2="200" className="stroke-[#1e40af]/15 dark:stroke-white/10" strokeWidth="1" strokeDasharray="4 4">
+                  <animate attributeName="stroke-dashoffset" values="8;0" dur="1.5s" repeatCount="indefinite" />
+                </line>
+                <line x1="315" y1="155" x2="265" y2="200" className="stroke-[#1e40af]/15 dark:stroke-white/10" strokeWidth="1" strokeDasharray="4 4">
+                  <animate attributeName="stroke-dashoffset" values="8;0" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
+                </line>
+                <line x1="250" y1="310" x2="250" y2="230" className="stroke-[#1e40af]/15 dark:stroke-white/10" strokeWidth="1" strokeDasharray="4 4">
+                  <animate attributeName="stroke-dashoffset" values="8;0" dur="1.5s" begin="1s" repeatCount="indefinite" />
+                </line>
+              </svg>
             </div>
 
             {/* Description */}
@@ -124,64 +198,128 @@ export default function Home() {
             Deep problem-solving, execution, and iteration. We&apos;re not a large outsourced workforce — and we don&apos;t aim to be.
           </p>
 
-          {/* Team Members Visual */}
-          <div className="relative bg-white dark:bg-[#10225d]/50 rounded-3xl border border-[#1e40af]/10 dark:border-white/10 p-12 shadow-lg dark:shadow-none mb-12">
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                <div 
-                  key={i} 
-                  className={`rounded-full bg-gradient-to-br from-[#c5defc] to-[#e8f4fc] dark:from-[#10225d] dark:to-[#152d7c] border border-[#1e40af]/20 dark:border-white/10 flex items-center justify-center
-                    ${i === 4 ? 'w-32 h-32 z-10' : i === 3 || i === 5 ? 'w-24 h-24' : 'w-20 h-20'}
-                  `}
-                >
-                  <span className={`${i === 4 ? 'text-4xl' : 'text-2xl'}`}>👤</span>
-                </div>
-              ))}]
+          {/* Team Members - Scrolling Carousel */}
+          <div className="relative mb-12">
+            {/* Fade edges */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-r from-[#f0f7fc] dark:from-[#101830] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-l from-[#f0f7fc] dark:from-[#101830] to-transparent z-10 pointer-events-none" />
+
+            {/* Scrolling track */}
+            <div className="overflow-hidden">
+              <div className="flex gap-8 animate-scroll-team">
+                {[
+                  { name: 'Team Member 1', role: 'Engineering', img: '/team/member1.jpg' },
+                  { name: 'Team Member 2', role: 'Product', img: '/team/member2.jpg' },
+                  { name: 'Team Member 3', role: 'Design', img: '/team/member3.jpg' },
+                  { name: 'Team Member 4', role: 'Engineering', img: '/team/member4.jpg' },
+                  { name: 'Team Member 5', role: 'Operations', img: '/team/member5.jpg' },
+                  { name: 'Team Member 6', role: 'Engineering', img: '/team/member6.jpg' },
+                  { name: 'Team Member 7', role: 'Product', img: '/team/member7.jpg' },
+                ].flatMap((member, i) => [
+                  { ...member, key: `a-${i}` },
+                  { ...member, key: `b-${i}` },
+                ]).map((member) => (
+                  <div
+                    key={member.key}
+                    className="group flex-shrink-0 flex flex-col items-center gap-3"
+                  >
+                    <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-[#1e40af]/10 dark:border-white/10 group-hover:border-[#1e40af]/30 dark:group-hover:border-white/25 transition-all duration-300 group-hover:scale-105 bg-gradient-to-br from-[#c5defc] to-[#e8f4fc] dark:from-[#10225d] dark:to-[#152d7c]">
+                      {/* Replace with <Image> when photos are available */}
+                      <div className="w-full h-full flex items-center justify-center">
+                        <svg className="w-12 h-12 md:w-16 md:h-16 text-[#1e40af]/30 dark:text-white/20" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-semibold text-[#0e0e0e] dark:text-white">{member.name}</p>
+                      <p className="text-xs text-[#1e40af]/70 dark:text-white/50">{member.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <p className="text-xl text-[#0e0e0e] text-center max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-[#0e0e0e]/60 dark:text-white/50 text-center max-w-4xl mx-auto leading-relaxed">
             As we grow, we aim to stay intentional—adding people who align with our values, curiosity, and commitment to building meaningful software.
           </p>
         </div>
       </section>
 
       {/* How We Work Section */}
-      <section className="py-20 px-6 md:px-12 bg-white">
+      <section className="py-24 px-6 md:px-12 bg-white dark:bg-[#0a0f1e] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] mb-4">How we Work?</h2>
-            <p className="text-xl text-[#0e0e0e] max-w-3xl mx-auto">
-              We treat every product, client or internal as something we&apos;d be proud to maintain ourselves
+          <div className="text-center mb-20">
+            <p className="text-sm font-semibold tracking-widest uppercase text-[#1e40af] dark:text-[#ededed]/60 mb-3">Our Process</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#0e0e0e] dark:text-white mb-5">How we Work</h2>
+            <p className="text-lg md:text-xl text-[#0e0e0e]/70 dark:text-white/60 max-w-2xl mx-auto">
+              We treat every product — client or internal — as something we&apos;d be proud to maintain ourselves.
             </p>
           </div>
 
-          {/* Work Principles */}
-          <div className="relative bg-gradient-to-br from-[#f0f7fc] to-white rounded-3xl border border-[#1e40af]/10 p-8 md:p-12 shadow-lg">
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Clear ownership and communication',
-                'Execution-first mindset',
-                'Practical solutions over buzzwords',
-                'Long-term thinking, even for MVPs'
-              ].map((principle, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#c5defc] border border-[#1e40af]/30 flex items-center justify-center shrink-0">
-                    <span className="text-[#1e40af]">✓</span>
-                  </div>
-                  <p className="text-lg md:text-xl font-medium text-[#0e0e0e]">{principle}</p>
+          {/* Work Principles - 4 cards */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {[
+              {
+                title: 'Clear Ownership',
+                desc: 'Every task has one owner. No ambiguity, no finger-pointing — just accountability.',
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                  </svg>
+                ),
+              },
+              {
+                title: 'Execution First',
+                desc: 'We ship early, iterate fast, and let working software do the talking.',
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                  </svg>
+                ),
+              },
+              {
+                title: 'No Buzzwords',
+                desc: 'Practical solutions grounded in real constraints — not hype-driven decisions.',
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                  </svg>
+                ),
+              },
+              {
+                title: 'Long-term Thinking',
+                desc: 'Even MVPs are built with tomorrow in mind — scalable, maintainable, real.',
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                ),
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="group relative p-7 rounded-2xl bg-[#f8fafc] dark:bg-white/[0.03] border border-[#1e40af]/[0.07] dark:border-white/[0.07] hover:border-[#1e40af]/20 dark:hover:border-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:shadow-none"
+              >
+                {/* Step number */}
+                <span className="absolute top-5 right-6 text-xs font-bold text-[#1e40af]/15 dark:text-white/10">
+                  0{index + 1}
+                </span>
+
+                <div className="w-11 h-11 rounded-lg bg-[#1e40af]/[0.06] dark:bg-white/[0.06] flex items-center justify-center text-[#1e40af] dark:text-white/70 mb-5 group-hover:bg-[#1e40af]/10 dark:group-hover:bg-white/10 transition-colors duration-300">
+                  {item.icon}
                 </div>
-              ))}
-            </div>
-            
-            {/* Center Logo */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#1e40af] font-medium text-xl opacity-20">
-              {'<bbuilds/>'}
-            </div>
+
+                <h3 className="text-lg font-semibold text-[#0e0e0e] dark:text-white mb-2">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-[#0e0e0e]/60 dark:text-white/50">{item.desc}</p>
+              </div>
+            ))}
           </div>
 
-          <p className="text-xl text-[#0e0e0e] text-center max-w-4xl mx-auto mt-12 leading-relaxed">
-            We&apos;re building <span className="text-[#1e40af] font-semibold">{'<bbuilds/>'}</span> for the long run one product, one system, one team at a time.
+          <p className="text-lg md:text-xl text-[#0e0e0e]/70 dark:text-white/60 text-center max-w-3xl mx-auto leading-relaxed">
+            We&apos;re building <span className="text-[#1e40af] dark:text-[#ededed] font-semibold">{'<bbuilds/>'}</span> for the long run — one product, one system, one team at a time.
           </p>
         </div>
       </section>

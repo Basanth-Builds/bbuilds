@@ -71,3 +71,21 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Team scrolling animation */
+@keyframes scroll-team {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-team {
+  animation: scroll-team 30s linear infinite;
+}
+
+.animate-scroll-team:hover {
+  animation-play-state: paused;
+}
